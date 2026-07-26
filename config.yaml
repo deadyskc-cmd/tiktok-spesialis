@@ -33,12 +33,12 @@ channels:
     language: id
 
 script:
-  model: llama-3.3-70b-versatile
+  model: gemini-2.5-flash
   target_seconds: 80
   words_per_second: 2.5
 
 voice:
-  provider: elevenlabs
+  provider: edge
   elevenlabs_model: eleven_multilingual_v2
   variety:
     enabled: true
