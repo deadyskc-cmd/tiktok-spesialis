@@ -147,24 +147,28 @@ def run_once(publish_at: str | None = None, upload_to_youtube: bool = True,
     video_count = len(s.get("published", []))
     needs_review = force_review or review.should_review(video_count)
 
-    if needs_review and upload_to_youtube:
+    if needs_review:
         _log("8/8 Saving draft for review")
         draft_path = review.save_draft(data, final)
         _log(f"    Draft saved: {draft_path.name}")
         _log("    Run: python -m src.review --list  (to see drafts)")
         _log("    Run: python -m src.review --approve <name>  (to approve)")
-    elif upload_to_youtube:
-        _log("8/8 Uploading to YouTube")
-        video_id = upload.upload_video(
-            video_path=final,
-            title=data["title"],
-            description=data["description"],
-            tags=data["tags"],
-            publish_at=publish_at,
-        )
-        _log(f"    uploaded: https://youtube.com/shorts/{video_id}")
-        
-        # TikTok Upload
+    else:
+        youtube_cfg = CONFIG.get("upload", {}).get("youtube_enabled", True)
+        if upload_to_youtube and youtube_cfg:
+            _log("8/8 Uploading to YouTube")
+            video_id = upload.upload_video(
+                video_path=final,
+                title=data["title"],
+                description=data["description"],
+                tags=data["tags"],
+                publish_at=publish_at,
+            )
+            _log(f"    uploaded: https://youtube.com/shorts/{video_id}")
+        else:
+            _log("    YouTube upload skipped by config or flag")
+            
+        # TikTok Upload (Independent of YouTube)
         if CONFIG.get("upload", {}).get("tiktok", {}).get("enabled", False):
             _log("    Uploading to TikTok")
             # Convert tags to hashtags string
