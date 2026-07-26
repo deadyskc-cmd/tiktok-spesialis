@@ -2,7 +2,7 @@ name: Daily Video Upload
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Runs at minute 0 past every hour
+    - cron: '0 */3 * * *'  # Runs at minute 0 past every 3rd hour
   workflow_dispatch:
 
 permissions:
