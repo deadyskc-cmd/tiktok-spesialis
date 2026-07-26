@@ -1,0 +1,79 @@
+niche: "fakta geografi dan tempat misterius di dunia (tempat angker dunia, pulau misterius, segitiga bermuda, gunung aneh, danau beracun, lubang raksasa, bangunan kuno)"
+audience: "orang dewasa Indonesia yang penasaran dengan tempat-tempat misterius di dunia, fenomena geografi aneh, dan lokasi penuh misteri"
+language: id
+
+script:
+  model: llama-3.3-70b-versatile
+  target_seconds: 80
+  words_per_second: 2.5
+
+voice:
+  provider: elevenlabs
+  elevenlabs_model: eleven_multilingual_v2
+  variety:
+    enabled: true
+    voices:
+      - edge_id: "id-ID-ArdiNeural"
+        elevenlabs_id: "VR6AewLTigWG4xSOukaG"
+        name: "Arnold"
+        gender: "male"
+      - edge_id: "id-ID-ArdiNeural"
+        elevenlabs_id: "ErXwobaYiN019PkySvjV"
+        name: "Jaka"
+        gender: "male"
+    strategy: "round_robin"
+  voice: id-ID-ArdiNeural
+  elevenlabs_voice_id: VR6AewLTigWG4xSOukaG
+
+captions:
+  whisper_model: base
+  font: "Anton"
+  font_size: 90
+  primary_color: "&H0000FFFF"
+  outline_color: "&H00000000"
+  outline: 6
+  words_per_caption: 1
+  position_y: 0.55
+
+video:
+  width: 1080
+  height: 1920
+  fps: 30
+
+upload:
+  privacy: "public"
+  category_id: "27"
+  made_for_kids: false
+  channel: "kisahnyata"
+  default_tags: ["geografi", "tempat misterius", "misteri dunia", "fakta unik", "tempat angker", "fenomena alam", "lokasi misteri", "pengetahuan"]
+  tiktok:
+    enabled: true
+
+
+
+branding:
+  enabled: true
+  intro:
+    enabled: false
+    path: "assets/branding/intro.mp4"
+    duration: 2.5
+  outro:
+    enabled: false
+    path: "assets/branding/outro.mp4"
+    duration: 3.0
+    cta_text: "Subscribe untuk fakta unik lainnya!"
+  watermark:
+    enabled: true
+    path: "assets/branding/watermark.png"
+    position: "center"
+    opacity: 0.6
+    size: 300
+hook_text:
+  enabled: true
+  font: "Anton"
+  font_size: 90
+  color: "white"
+  outline_color: "&H00000000"
+  outline: 4
+  position: "center"
+  duration: 3
