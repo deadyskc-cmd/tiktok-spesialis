@@ -1,6 +1,8 @@
 name: Daily Video Upload
 
 on:
+  schedule:
+    - cron: '0 * * * *'  # Runs at minute 0 past every hour
   workflow_dispatch:
 
 permissions:
@@ -46,10 +48,8 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Decode YouTube credentials
-        run: |
-          echo "${{ secrets.CLIENT_SECRET_B64 }}" | base64 -d > client_secret.json
-          echo "${{ secrets.TOKEN_B64 }}" | base64 -d > token_kisahnyata.json
+      - name: Dummy step for removed YouTube creds
+        run: echo "YouTube upload disabled for TikTok Specialist repo"
           
       - name: Set TikTok Cookies
         if: env.TIKTOK_COOKIES != ''
@@ -92,13 +92,5 @@ jobs:
             git push
           fi
 
-      - name: Commit refreshed token (if changed)
-        run: |
-          if git diff --quiet token_kisahnyata.json 2>/dev/null; then
-            echo "Token unchanged"
-          else
-            git add token_kisahnyata.json
-            git commit -m "auto: refresh YouTube token"
-            git pull --rebase
-            git push
-          fi
+      - name: End of workflow
+        run: echo "Workflow complete"

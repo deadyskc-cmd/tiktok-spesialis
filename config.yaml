@@ -1,6 +1,36 @@
-niche: "fakta geografi dan tempat misterius di dunia (tempat angker dunia, pulau misterius, segitiga bermuda, gunung aneh, danau beracun, lubang raksasa, bangunan kuno)"
-audience: "orang dewasa Indonesia yang penasaran dengan tempat-tempat misterius di dunia, fenomena geografi aneh, dan lokasi penuh misteri"
-language: id
+channels:
+  - name: "Sains & Pengetahuan"
+    niche: "fakta sains dan pengetahuan umum yang mengejutkan (alam semesta, tubuh manusia, sejarah, hewan, teknologi)"
+    audience: "orang dewasa Indonesia yang penasaran dan suka belajar hal baru"
+    language: id
+  - name: "Kisah Nyata"
+    niche: "kisah nyata tragis, misteri belum terpecahkan, dan kejadian aneh di dunia"
+    audience: "orang dewasa yang menyukai misteri dan true crime"
+    language: id
+  - name: "Fakta Anime"
+    niche: "fakta unik tersembunyi tentang dunia anime populer dan budaya otaku"
+    audience: "wibu dan pecinta anime di Indonesia"
+    language: id
+  - name: "Web & AI"
+    niche: "website rahasia, tools AI gratis, dan tips teknologi untuk produktivitas"
+    audience: "pelajar dan pekerja remote yang suka teknologi"
+    language: id
+  - name: "Horor & Urban Legend"
+    niche: "urban legend menakutkan, mitos mistis lokal, dan cerita hantu"
+    audience: "remaja dan dewasa yang menyukai konten horor"
+    language: id
+  - name: "Fakta Negara"
+    niche: "fakta aneh dan budaya unik dari berbagai negara di seluruh dunia"
+    audience: "orang yang suka traveling dan wawasan global"
+    language: id
+  - name: "Life Hacks"
+    niche: "life hacks aneh tapi nyata dan tips bertahan hidup yang berguna"
+    audience: "semua kalangan umur"
+    language: id
+  - name: "Fakta Psikologi"
+    niche: "fakta psikologi tentang cinta, sifat manusia, dan kepribadian"
+    audience: "remaja dan dewasa muda"
+    language: id
 
 script:
   model: llama-3.3-70b-versatile
@@ -41,15 +71,19 @@ video:
   fps: 30
 
 upload:
+  youtube_enabled: false
   privacy: "public"
   category_id: "27"
   made_for_kids: false
-  channel: "kisahnyata"
-  default_tags: ["geografi", "tempat misterius", "misteri dunia", "fakta unik", "tempat angker", "fenomena alam", "lokasi misteri", "pengetahuan"]
+  channel: "default"
+  default_tags: ["fakta unik", "pengetahuan", "edukasi", "fakta sains", "alam liar", "hewan unik", "fakta menarik", "sains viral", "fakta"]
+  schedule:
+    enabled: true
+    optimal_hours: [11, 13, 17, 19, 21]
+    max_per_day: 2
+    delay_minutes: 120
   tiktok:
     enabled: true
-
-
 
 branding:
   enabled: true

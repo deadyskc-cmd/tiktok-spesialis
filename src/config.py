@@ -16,6 +16,15 @@ load_dotenv(ROOT / ".env")
 with open(ROOT / "config.yaml", "r", encoding="utf-8") as f:
     CONFIG = yaml.safe_load(f)
 
+# Randomly select a channel for this run
+if "channels" in CONFIG and isinstance(CONFIG["channels"], list) and len(CONFIG["channels"]) > 0:
+    import random
+    selected = random.choice(CONFIG["channels"])
+    print(f"[CONFIG] Randomly selected channel: {selected.get('name', 'Unknown')}")
+    # Merge selected channel properties into root CONFIG so existing code works
+    for k, v in selected.items():
+        CONFIG[k] = v
+
 OUTPUT_DIR = ROOT / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 STATE_FILE = ROOT / "state.json"
