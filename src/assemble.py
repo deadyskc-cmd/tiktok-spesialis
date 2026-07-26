@@ -141,15 +141,7 @@ def build(
 
     hook_cfg = CONFIG.get("hook_text", {})
     thumb_dur = float(hook_cfg.get("duration", 3.0)) if hook_cfg.get("enabled", False) else 2.0
-    if thumbnail_img and thumbnail_img.exists() and len(durations) > 0:
-        deficit = thumb_dur
-        for i in range(len(durations)):
-            if deficit <= 0: break
-            can_borrow = durations[i] - 1.0 # leave at least 1s
-            if can_borrow > 0:
-                borrow = min(deficit, can_borrow)
-                durations[i] -= borrow
-                deficit -= borrow
+    # Borrowing time for thumbnail removed because it is placed at the end of the video
 
     # Expand durations when multiple clips per scene
     if videos_per_scene > 1:
@@ -169,6 +161,11 @@ def build(
 
     prepped = []
     
+    for i, (src, dur) in enumerate(zip(scene_videos, durations)):
+        out = work_dir / f"prep_{i:02d}.mp4"
+        _prep_scene_clip(src, dur, out, w, h, fps)
+        prepped.append(out)
+
     if thumbnail_img and thumbnail_img.exists():
         thumb_out = work_dir / "prep_thumb.mp4"
         _run([
@@ -184,12 +181,7 @@ def build(
             str(thumb_out)
         ], f"thumbnail prep ({thumb_dur:.1f}s)")
         prepped.append(thumb_out)
-        durations.insert(0, thumb_dur)
-    dur_offset = 1 if thumbnail_img and thumbnail_img.exists() else 0
-    for i, (src, dur) in enumerate(zip(scene_videos, durations[dur_offset:])):
-        out = work_dir / f"prep_{i:02d}.mp4"
-        _prep_scene_clip(src, dur, out, w, h, fps)
-        prepped.append(out)
+        durations.append(thumb_dur)
 
     silent = work_dir / "silent.mp4"
     _assemble_with_transitions(prepped, durations, silent, w, h, fps)
@@ -296,7 +288,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
         hook_ass_arg = str(hook_ass).replace("\\", "/").replace(":", "\\:")
         vf_parts.append(f"subtitles='{hook_ass_arg}':fontsdir='{fonts_arg}'")
-    # vf_parts.append(f"subtitles='{ass_arg}':fontsdir='{fonts_arg}'")
+    vf_parts.append(f"subtitles='{ass_arg}':fontsdir='{fonts_arg}'")
     vf_chain = ",".join(vf_parts)
 
     bg_music = ROOT / "assets" / "bg.mp3"
@@ -318,7 +310,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         "-movflags", "+faststart",
         str(out_path),
     ])
-    _run(cmd, "final render (video+audio+no_captions)")
+    _run(cmd, "final render (video+audio+captions)")
     return out_path
 
 
