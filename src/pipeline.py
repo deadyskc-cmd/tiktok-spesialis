@@ -84,17 +84,22 @@ def run_once(publish_at: str | None = None, upload_to_youtube: bool = True,
     # so captions stay synced to the audio. The video plays the thumbnail for
     # thumb_dur seconds, then content scenes begin at the same audio position
     # where these captions start -> perfect sync, no double offset.
-    _hook_cfg = CFG.get("hook_text", {})
-    hook_word_count = len(data["scenes"][0]["text"].split()) if data.get("scenes") else 0
-    captions_words = []
+    hook_cfg = CFG.get("hook_text", {})
+    hook_enabled = hook_cfg.get("enabled", False)
+    hook_word_count = 0
+    if hook_enabled and data.get("scenes"):
+        hook_word_count = len(data["scenes"][0]["text"].split())
+    captions_words = words[hook_word_count:] if hook_word_count < len(words) else words
     ass_path = captions.write_ass(captions_words, work / "captions.ass",
                                   CFG["video"]["width"], CFG["video"]["height"], offset=-0.3)
 
     # ============================================================
-    # Step 5.5: Thumbnail image disabled - hook shown as popup overlay
+    # Step 5.5: Generate Thumbnail for end of video
     # ============================================================
-    _log("5.5/8 Thumbnail image disabled; hook will be popup overlay")
-    thumbnail_img = None
+    _log("5.5/8 Generating thumbnail image")
+    from . import thumbnail
+    thumbnail_img = work / "thumbnail.jpg"
+    thumbnail.generate(data["title"], thumbnail_img)
 
     # ============================================================
     # Step 6: Assemble video
@@ -147,32 +152,28 @@ def run_once(publish_at: str | None = None, upload_to_youtube: bool = True,
     video_count = len(s.get("published", []))
     needs_review = force_review or review.should_review(video_count)
 
-    if needs_review:
+    if needs_review and upload_to_youtube:
         _log("8/8 Saving draft for review")
         draft_path = review.save_draft(data, final)
         _log(f"    Draft saved: {draft_path.name}")
         _log("    Run: python -m src.review --list  (to see drafts)")
         _log("    Run: python -m src.review --approve <name>  (to approve)")
-    else:
-        youtube_cfg = CONFIG.get("upload", {}).get("youtube_enabled", True)
-        if upload_to_youtube and youtube_cfg:
-            _log("8/8 Uploading to YouTube")
-            video_id = upload.upload_video(
-                video_path=final,
-                title=data["title"],
-                description=data["description"],
-                tags=data["tags"],
-                publish_at=publish_at,
-            )
-            _log(f"    uploaded: https://youtube.com/shorts/{video_id}")
-        else:
-            _log("    YouTube upload skipped by config or flag")
-            
-        # TikTok Upload (Independent of YouTube)
+    elif upload_to_youtube:
+        _log("8/8 Uploading to YouTube")
+        video_id = upload.upload_video(
+            video_path=final,
+            title=data["title"],
+            description=data["description"],
+            tags=data["tags"],
+            publish_at=publish_at,
+        )
+        _log(f"    uploaded: https://youtube.com/shorts/{video_id}")
+        
+        # TikTok Upload
         if CONFIG.get("upload", {}).get("tiktok", {}).get("enabled", False):
             _log("    Uploading to TikTok")
             # Convert tags to hashtags string
-            hashtags = " ".join([f"#{t.replace(' ', '')}" for t in data["tags"]])
+            hashtags = " ".join([f"#{t.replace(' ', '')}" for t in data["tags"]][:5])
             tiktok_desc = f"{data['title']}\n\n{data['description']}\n\n{hashtags}"
             upload_tiktok.upload_video(video_path=final, description=tiktok_desc)
     else:
